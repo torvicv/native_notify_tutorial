@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       BigInt    @id @default(autoincrement())
+  username String
+  email    String    @unique
+  password String    
+  roleId   BigInt    
+  role     Roles     @relation(fields: [roleId], references: [id]) // Relación con Roles
+  comments Comment[]
+  posts    Post[]
+}
+
+model Post {
+  id       BigInt    @id @default(autoincrement())
+  title    String
+  content  String
+  authorId BigInt
+  comments Comment[]
+  author   User      @relation(fields: [authorId], references: [id])
+
+  @@index([authorId], map: "Post_authorId_fkey")
+}
+
+model Comment {
+  id       BigInt @id @default(autoincrement())
+  content  String
+  postId   BigInt
+  authorId BigInt
+  author   User   @relation(fields: [authorId], references: [id])
+  post     Post   @relation(fields: [postId], references: [id])
+
+  @@index([authorId], map: "Comment_authorId_fkey")
+  @@index([postId], map: "Comment_postId_fkey")
+}
+
+model Roles {
+  id    BigInt  @id @default(autoincrement())
+  name  Role    @unique
+  users User[]  // Relación con User
+}
+
+enum Role {
+  User
+  Admin
+}
