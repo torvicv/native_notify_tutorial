@@ -1,7 +1,7 @@
 import { SignupFormSchema } from '@/app/lib/definitions';
 import { createSession, deleteSession } from '@/app/lib/session';
-// import { cookies } from 'next/headers';
-
+import { NextResponse } from 'next/server';
+import { redirect } from 'next/navigation';
 
 export async function signup(state, formData) {
     // Validate form fields
@@ -38,7 +38,8 @@ export async function signup(state, formData) {
     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     body: JSON.stringify(data) // body data type must match "Content-Type" header
   });
-  const { message, status } = response.json();
+  const json = await response.json();
+  const { message, status, user } = json;
 
  
   if (status != 200) {
@@ -46,11 +47,17 @@ export async function signup(state, formData) {
       message: 'An error occurred while creating your account.',
     }
   }
- 
+  console.log(user);
+  
   // 4. Create user session
-  //await createSession(user.id)
+  await createSession(user.id)
   // 5. Redirect user
-  redirect('/')
+  console.log('2');
+  
+  return new NextResponse(
+    JSON.stringify({ success: true, user, message: 'User created successfully' }),
+    { status: 201 }
+  );
 }
 
 export async function logout() {

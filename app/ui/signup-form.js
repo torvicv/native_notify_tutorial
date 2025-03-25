@@ -1,10 +1,18 @@
 'use client'
  
-import { signup } from '@/app/actions/auth'
-import { useActionState } from 'react'
+import { signup } from '@/app/actions/auth';
+import { useActionState } from 'react';
+import { useRouter } from 'next/navigation';
  
 export default function SignupForm() {
   const [state, action, pending] = useActionState(signup, undefined)
+
+  if (state && state.status == 201) {
+    const router = useRouter();
+    console.log('redirecting to');
+    
+    router.push('/dashboard');
+  }  
  
   return (
     <div className='min-h-screen w-full h-full flex justify-center items-center'>

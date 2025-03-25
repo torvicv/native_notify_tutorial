@@ -2,6 +2,8 @@ import 'server-only'
  
 import { cookies } from 'next/headers'
 import { decrypt } from '@/app/lib/session'
+import { cache } from 'react';
+import prisma from '@/lib/prisma';
  
 export const verifySession = cache(async () => {
   const cookie = (await cookies()).get('session')?.value
@@ -15,25 +17,21 @@ export const verifySession = cache(async () => {
 })
 
 export const getUser = cache(async () => {
-    const session = await verifySession()
-    if (!session) return null
+    const session = await verifySession();
+    if (!session) return null;
    
+    const { userId } = session;
     try {
-      const data = await db.query.users.findMany({
-        where: eq(users.id, session.userId),
-        // Explicitly return the columns you need rather than the whole user object
-        columns: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      })
+      const data = await prisma.user.findFirst({
+        where: {id: userId},
+      });
    
-      const user = data[0]
-   
-      return user
+      console.log(data);
+      const user = data;
+      
+      return user;
     } catch (error) {
-      console.log('Failed to fetch user')
-      return null
+      console.log('Failed to fetch user', error);
+      return null;
     }
   })

@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import { createSession } from "@/app/lib/session";
 
 function serializeBigIntToInt(obj) {
   if (typeof obj === 'bigint') {
@@ -43,13 +44,27 @@ export async function GET() {
 export async function POST(req, res) {
   try {
     const { name, email, password } = await req.json();
-    const users = await prisma.user.create({
+    const user = await prisma.user.create({
       data: { username: name, roleId: 2, email: email, password: await bcrypt.hash(password, 10) },
     });
-    // mensaje de usuario creado
-    const message = '¡Usuario creado correctamente!'
 
-    return NextResponse.json(message, { status: 200 });
+    const idsToIntInUser = {
+      id: Number(user.id),
+      roleId: Number(user.roleId),
+      email: user.email,
+      username: user.username,
+      password: user.password,
+    }
+    // mensaje de usuario creado
+    const message = '¡Usuario creado correctamente!'    
+     
+      // 4. Create user session
+      await createSession(Number(user.id))
+      // 5. Redirect user
+    return NextResponse.json({
+      message: message,
+      user: idsToIntInUser,
+      status: 200 }, {status: 200});
   } catch (error) {
     console.error("Error creating users:", error);
     return NextResponse.json(
