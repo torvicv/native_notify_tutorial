@@ -1,40 +1,34 @@
-'use client'
- 
-import { login } from '@/app/actions/auth';
-import { useActionState, useState } from 'react';
-import { useRouter } from 'next/navigation';
- 
-export default function SignupForm({state, user}) {
-   
-    const [actionForm, setActionForm] = useState({
-        email: user?.email ?? 'victor4@gmail.com',
-        password: user?.password ?? 'password4#',
-    });
+"use client";
+
+import { signIn, signOut } from "next-auth/react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function SignupForm() {
+    const [email, setEmail] = useState("victor4@gmail.com");
+    const [password, setPassword] = useState("password4#");
+    const [error, setError] = useState(null);
+    const router = useRouter();
 
     const handleChange = (e) => {
         setActionForm({...actionForm, [e.target.name]: e.target.value });
     }
 
-    const router = useRouter();
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(actionForm),
+        const result = await signIn("credentials", {
+            redirect: false, // ✅ Para manejar la redirección manualmente
+            email,
+            password,
         });
 
-        if (!response.ok) {
-            throw new Error('Server error');
+        if (result?.error) {
+            console.log(result.error);
         } else {
-            console.log('redirecting to');
-            router.push('/dashboard');
+            router.push("/dashboard"); // ✅ Redirige manualmente si es exitoso
         }
-    }
+    };
  
   return (
     <div className='min-h-screen w-full h-full flex justify-center items-center'>
@@ -43,13 +37,13 @@ export default function SignupForm({state, user}) {
                 <div className='grid grid-cols-2 gap-4'>
                     <div>
                         <label htmlFor="email">Email</label>
-                        <input value={actionForm.email} onChange={handleChange} className='border-b' id="email" name="email" placeholder="Email" />
+                        <input value={email} onChange={handleChange} className='border-b' id="email" name="email" placeholder="Email" />
                         {/*state?.errors?.email && <p className='text-red-600 text-xs'>{/*state.errors.email}</p>*/}
                     </div>
                 
                     <div>
                         <label htmlFor="password">Password</label>
-                        <input className='border-b' onChange={handleChange} value={actionForm.password} id="password" name="password" type="password" placeholder='Password' />
+                        <input className='border-b' onChange={handleChange} value={password} id="password" name="password" type="password" placeholder='Password' />
                         {/*state?.errors?.password && (
                             <div>
                             <p className='text-red-600 text-xs'>Password must:</p>
@@ -65,6 +59,7 @@ export default function SignupForm({state, user}) {
                 <button type="submit" className='bg-blue-600 py-2 px-3 rounded-lg text-white mt-3'>
                     Log in
                 </button>
+                <button onClick={() => signOut()}>Logout</button>
             </form>
         </div>
     </div>

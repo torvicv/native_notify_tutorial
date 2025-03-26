@@ -58,7 +58,7 @@ export async function signup(state, formData) {
     JSON.stringify({ success: true, user, message: 'User created successfully' }),
     { status: 201 }
   );
-}
+}  
 
 export async function logout() {
   deleteSession()
