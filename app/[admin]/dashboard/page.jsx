@@ -4,7 +4,7 @@ import UserDashboard from '@/pages/Dashboard/UserDashboard';
 import AdminDashboard from '@/pages/Dashboard/AdminDashboard';
 import Main from '@/components/layouts/main';
 import { getServerSession } from 'next-auth';
-import authOptions from '../lib/auth';
+import authOptions from '@/app/lib/auth';
 
 export default async function Dashboard() {
   const user = await getServerSession(authOptions);

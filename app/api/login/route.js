@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import { createSession } from "@/app/lib/session";
 
 
-export async function GET() {
+/*export async function GET() {
   try {
     return NextResponse.status(200);
   } catch (error) {
@@ -14,7 +14,7 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+}*/
 
 export async function POST(req, res) {
   try {

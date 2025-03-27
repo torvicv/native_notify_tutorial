@@ -1,38 +1,37 @@
-import { NextResponse } from 'next/server'
-import { decrypt } from '@/app/lib/session'
-import { cookies } from 'next/headers'
- 
-// 1. Specify protected and public routes
-const protectedRoutes = ['/dashboard']
-const publicRoutes = ['/login', '/signup', '/']
- 
-export default async function middleware(req) {
-  // 2. Check if the current route is protected or public
-  const path = req.nextUrl.pathname
-  const isProtectedRoute = protectedRoutes.includes(path)
-  const isPublicRoute = publicRoutes.includes(path)
- 
-  // 3. Decrypt the session from the cookie
-  const cookie = (await cookies()).get('session')?.value
-  const session = await decrypt(cookie)
- 
-  // 5. Redirect to /login if the user is not authenticated
-  if (isProtectedRoute && !session?.userId) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl))
+import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { withAuth } from 'next-auth/middleware';
+
+export default withAuth(
+  async function middleware(req) {
+    const token = await getToken({
+      req: req,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', req.url));
+    }
+
+    console.log(token);
+    
+
+    switch (token.roleId) {
+      case 2:
+        if (!req.nextUrl.pathname.startsWith('/user')) {
+          return NextResponse.redirect(new URL('/user/dashboard', req.url));
+        }
+        break;
+      case 1:
+        if (!req.nextUrl.pathname.startsWith('/admin')) {
+          return NextResponse.redirect(new URL('admin/dashboard', req.url));
+        }
+        break;
+      default:
+        return NextResponse.redirect(new URL('/login', req.url));
+    }
   }
- 
-  // 6. Redirect to /dashboard if the user is authenticated
-  if (
-    isPublicRoute &&
-    session?.userId &&
-    !req.nextUrl.pathname.startsWith('/dashboard')
-  ) {
-    return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
-  }
- 
-  return NextResponse.next()
-}
- 
+)
 // Routes Middleware should not run on
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],

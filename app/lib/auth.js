@@ -18,8 +18,6 @@ const authOptions = {
                 const user = await prisma.user.findUnique({
                     where: { email: credentials.email },
                 });
-
-                console.log(user);
                 
                 if (!user) {
                     throw new Error('User not found');
@@ -40,6 +38,9 @@ const authOptions = {
             },
         }),
     ],
+    pages: {
+        signIn: '/login',
+    },
     session: {
         strategy: 'jwt',
         maxAge: 24 * 60 * 60,

@@ -1,12 +1,12 @@
 'use client';
 
-import { logout } from "@/app/actions/auth";
+import { signOut } from "next-auth/react";
 
 const UserDashboard = (({user}) => {
     return (
         <>
             <h1>Hello {user.username}</h1>
-            <button onClick={logout}>
+            <button onClick={signOut}>
                 Logout
             </button>
         </>
