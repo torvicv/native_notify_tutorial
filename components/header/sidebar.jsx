@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { usePathname } from "next/navigation";
 import { createRef, useState } from "react";
@@ -8,8 +8,8 @@ const Sidebar = () => {
     const path = usePathname();
     const splitPath = path.split("/");
     const currentSection = splitPath[1];
-    return '/'+currentSection+'/'+pathname;
-  }
+    return "/" + currentSection + "/" + pathname;
+  };
   const [isOpen, setIsOpen] = useState(false);
 
   const mySidebar = createRef();
@@ -17,41 +17,47 @@ const Sidebar = () => {
   const open = () => {
     const opened = isOpen;
     setIsOpen(!isOpen);
-    mySidebar.current.className = mySidebar.current.className.replace(' !w-64', '');
+    mySidebar.current.className = mySidebar.current.className.replace(
+      " !w-64",
+      ""
+    );
     if (opened) {
-      mySidebar.current.className = mySidebar.current.className.replace(' !left-0', '');
+      mySidebar.current.className = mySidebar.current.className.replace(
+        " !left-0",
+        ""
+      );
     } else {
-      mySidebar.current.className += ' !w-64';
-      mySidebar.current.className += ' !left-0';
+      mySidebar.current.className += " !w-64";
+      mySidebar.current.className += " !left-0";
     }
   };
 
   return (
     <>
       {!isOpen && (
-      <button
-        data-drawer-target="default-sidebar"
-        data-drawer-toggle="default-sidebar"
-        aria-controls="default-sidebar"
-        type="button"
-        onClick={open}
-        className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-      >
-        <span className="sr-only">Open sidebar</span>
-        <svg
-          className="w-6 h-6"
-          aria-hidden="false"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-          xmlns="http://www.w3.org/2000/svg"
+        <button
+          data-drawer-target="default-sidebar"
+          data-drawer-toggle="default-sidebar"
+          aria-controls="default-sidebar"
+          type="button"
+          onClick={open}
+          className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         >
-          <path
-            clipRule="evenodd"
-            fillRule="evenodd"
-            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-          ></path>
-        </svg>
-      </button>
+          <span className="sr-only">Open sidebar</span>
+          <svg
+            className="w-6 h-6"
+            aria-hidden="false"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clipRule="evenodd"
+              fillRule="evenodd"
+              d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
+            ></path>
+          </svg>
+        </button>
       )}
       <aside
         ref={mySidebar}
@@ -60,13 +66,16 @@ const Sidebar = () => {
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-        <button className="hover:bg-gray-900 bg-gray-500 py-2 px-4 text-white rounded-full mb-4" onClick={open}>
+          <button
+            className="hover:bg-gray-900 bg-gray-500 py-2 px-4 text-white rounded-full mb-4"
+            onClick={open}
+          >
             X
-        </button>
+          </button>
           <ul className="space-y-2 font-medium">
             <li>
               <a
-                href={menu('dashboard')}
+                href={menu("dashboard")}
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
@@ -84,7 +93,7 @@ const Sidebar = () => {
             </li>
             <li>
               <a
-                href={menu('clientes')}
+                href={menu("clientes")}
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
@@ -101,7 +110,7 @@ const Sidebar = () => {
             </li>
             <li>
               <a
-                href={menu('articulos')}
+                href={menu("articulos")}
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
@@ -116,10 +125,34 @@ const Sidebar = () => {
                 <span className="flex-1 ms-3 whitespace-nowrap">Artículos</span>
               </a>
             </li>
+            <li>
+              <a
+                href={menu("servicios")}
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 5.365V3m0 2.365a5.338 5.338 0 0 1 5.133 5.368v1.8c0 2.386 1.867 2.982 1.867 4.175 0 .593 0 1.292-.538 1.292H5.538C5 18 5 17.301 5 16.708c0-1.193 1.867-1.789 1.867-4.175v-1.8A5.338 5.338 0 0 1 12 5.365ZM8.733 18c.094.852.306 1.54.944 2.112a3.48 3.48 0 0 0 4.646 0c.638-.572 1.236-1.26 1.33-2.112h-6.92Z"
+                  />
+                </svg>
+                <span className="flex-1 ms-3 whitespace-nowrap">Servicios</span>
+              </a>
+            </li>
           </ul>
         </div>
       </aside>
-      
     </>
   );
 };
