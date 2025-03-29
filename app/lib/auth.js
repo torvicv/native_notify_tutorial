@@ -52,6 +52,7 @@ const authOptions = {
                 token.id = user.id; // ✅ Agregamos `id` al token
                 token.email = user.email; // ✅ Agregamos `email` al token
                 token.roleId = user.roleId; // ✅ Agregamos `roleId` al token
+                token.username = user.username; // ✅ Agregamos `username` al token
             }
             return token;
         },
@@ -60,6 +61,7 @@ const authOptions = {
                 session.userId = token.id; // ✅ Usamos `token.id` en vez de `user.id`
                 session.email = token.email; // ✅ Usamos `token.email` en vez de `user.email`
                 session.roleId = token.roleId; // ✅ Agregamos `roleId` al token
+                session.username = token.username; // ✅ Agregamos `username` al token
             }
             return session;
         },

@@ -1,4 +1,3 @@
-import { getUser } from '@/app/lib/dal';
 import { redirect } from 'next/navigation';
 import UserDashboard from '@/pages/Dashboard/UserDashboard';
 import AdminDashboard from '@/pages/Dashboard/AdminDashboard';
@@ -15,13 +14,13 @@ export default async function Dashboard() {
     if (userRole == 1) {
       return (
         <Main>
-        <AdminDashboard user={user} />
+        <AdminDashboard />
         </Main>
       );
     } else if (userRole == 2) {
       return (
         <Main>
-        <UserDashboard user={user} />
+        <UserDashboard />
         </Main>
       );
     } else {

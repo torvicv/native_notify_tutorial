@@ -2,14 +2,11 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { createSession } from "@/app/lib/session";
-import { serializeBigIntToInt } from "@/components/helpers";
 
 export async function GET() {
   try {
     const clientes = await prisma.cliente.findMany();
-    const serializedClientes = serializeBigIntToInt(clientes); // Convierte BigInt a int
-
-    return NextResponse.json(serializedClientes, { status: 200 });
+    return NextResponse.json(clientes, { status: 200 });
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
@@ -31,8 +28,6 @@ export async function POST(req, res) {
       );
     }   
      
-      // 4. Create user session
-      await createSession(Number(user.id))
     const cliente = await prisma.cliente.create({
       data: { nombre: nombre, email: email, password: await bcrypt.hash(password, 10) },
     });

@@ -1,21 +1,12 @@
-'use client'
+import Main from '@/components/layouts/main';
+import Clientes from './clientes';
 
-import { useRouter } from 'next/navigation';
-import { getSession } from 'next-auth/react';
-
-export default function Dashboard() {
-  const user = getSession();
-  
-  const router = useRouter();
-  const create = () => {
-    router.push('/admin/clientes/create');
-  }
+export default async function Page() {  
+  const response = await fetch(process.env.NEXTAUTH_URL+'/api/admin/clientes');
+  const clientes = await response.json();
   return (
-    <>
-      <h1>Clientes</h1>
-      <button onClick={create} >
-        Crear Cliente
-      </button>
-    </>
+    <Main>
+      <Clientes clientes={clientes} />
+    </Main>
   )
 }
