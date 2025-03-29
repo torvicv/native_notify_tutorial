@@ -11,6 +11,9 @@ async function main() {
   const userRole = await prisma.roles.create({
     data: { name: 'User' }
   });
+  const clienteRole = await prisma.roles.create({
+      data: { name: 'Cliente' }
+    });
 
   const hashed = await bcrypt.hash('password', 10);
   // Crear usuarios con los IDs de los roles creados

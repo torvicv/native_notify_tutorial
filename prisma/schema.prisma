@@ -50,4 +50,97 @@ model Roles {
 enum Role {
   User
   Admin
+  Cliente
+}
+
+model Cliente {
+  id        Int     @id @default(autoincrement())
+  nombre    String
+  email     String  @unique
+  password  String
+  tickets   Ticket[]
+}
+
+model Articulo {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  bonos     BonosDetalle[]
+  servicios ServiciosDetalle[]
+  ticketDetalles TicketDetalle[]
+}
+
+model Servicio {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  detalles  ServiciosDetalle[]
+  bonos     BonosDetalle[]
+  ticketDetalles TicketDetalle[]
+}
+
+model ServiciosDetalle {
+  id         Int       @id @default(autoincrement())
+  servicio   Servicio  @relation(fields: [servicioId], references: [id])
+  servicioId Int
+  articulo   Articulo? @relation(fields: [articuloId], references: [id])
+  articuloId Int?
+  cantidad   Int       @default(1)
+}
+
+model Bonos {
+  id                  Int            @id @default(autoincrement())
+  precio              Decimal
+  fechaInicio         DateTime
+  fechaFin            DateTime
+  detalles            BonosDetalle[]
+  usos                BonosUso[]
+  tickets_detalles    TicketDetalle[]
+}
+
+model BonosDetalle {
+  id         Int       @id @default(autoincrement())
+  bono       Bonos     @relation(fields: [bonoId], references: [id])
+  bonoId     Int
+  articulo   Articulo? @relation(fields: [articuloId], references: [id])
+  articuloId Int?
+  servicio   Servicio? @relation(fields: [servicioId], references: [id])
+  servicioId Int?
+}
+
+model BonosUso {
+  id       Int             @id @default(autoincrement())
+  bono     Bonos           @relation(fields: [bonoId], references: [id])
+  bonoId   Int
+  cantidad Int
+  detalles BonosUsoDetalle[]
+}
+
+model BonosUsoDetalle {
+  id         Int       @id @default(autoincrement())
+  bonoUso    BonosUso  @relation(fields: [bonoUsoId], references: [id])
+  bonoUsoId  Int
+  fecha      DateTime
+  cantidad   Int
+}
+
+model Ticket {
+  id           Int             @id @default(autoincrement())
+  nombre       String
+  fecha        DateTime
+  identificador String         @unique
+  cliente      Cliente         @relation(fields: [clienteId], references: [id])
+  clienteId    Int
+  detalles     TicketDetalle[]
+}
+
+model TicketDetalle {
+  id         Int       @id @default(autoincrement())
+  ticket     Ticket    @relation(fields: [ticketId], references: [id])
+  ticketId   Int
+  servicio   Servicio? @relation(fields: [servicioId], references: [id])
+  servicioId Int?
+  articulo   Articulo? @relation(fields: [articuloId], references: [id])
+  articuloId Int?
+  bono       Bonos?    @relation(fields: [bonoId], references: [id])
+  bonoId     Int?
+  cantidad   Int
 }

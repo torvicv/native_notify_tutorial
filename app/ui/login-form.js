@@ -5,8 +5,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function SignupForm() {
-    const [email, setEmail] = useState("victor4@gmail.com");
-    const [password, setPassword] = useState("password4#");
+    const [email, setEmail] = useState("admin@example.com");
+    const [password, setPassword] = useState("password");
     const [error, setError] = useState(null);
     const router = useRouter();
 
