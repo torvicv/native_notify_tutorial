@@ -127,7 +127,6 @@ model BonosUsoDetalle {
 
 model Ticket {
   id           Int             @id @default(autoincrement())
-  nombre       String
   fecha        DateTime
   identificador String         @unique
   cliente      Cliente         @relation(fields: [clienteId], references: [id])
