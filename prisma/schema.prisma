@@ -88,9 +88,11 @@ model ServiciosDetalle {
 
 model Bonos {
   id                  Int            @id @default(autoincrement())
+  nombre              String
+  descripcion         String
   precio              Decimal
-  fechaInicio         DateTime
-  fechaFin            DateTime
+  fechaInicio         DateTime?
+  fechaFin            DateTime?
   detalles            BonosDetalle[]
   usos                BonosUso[]
   tickets_detalles    TicketDetalle[]
@@ -98,6 +100,7 @@ model Bonos {
 
 model BonosDetalle {
   id         Int       @id @default(autoincrement())
+  cantidad   Int
   bono       Bonos     @relation(fields: [bonoId], references: [id])
   bonoId     Int
   articulo   Articulo? @relation(fields: [articuloId], references: [id])
