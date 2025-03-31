@@ -53,6 +53,12 @@ export async function POST(req, res) {
             articuloId: detalle.articuloId,
             servicioId: detalle.servicioId,
             bonoId: detalle.bonoId,
+            uso: {
+              create: {
+                bonoId: detalle.bonoId,
+                cantidad: 0,
+              }
+            }
           })),
         },
       }

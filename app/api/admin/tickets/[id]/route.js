@@ -1,12 +1,24 @@
 import { NextResponse } from "next/server";
-import { serializeBigIntToInt } from "@/components/helpers";
+import prisma from "@/lib/prisma";
 
-export async function GET(req) {
-    const { id } = req.query;
-    const bono = await prisma.bonos.findUnique({
+export async function GET(request, { params }) {
+    
+    const {id} = await params;
+  
+    console.log(id);
+    const ticket = await prisma.ticket.findUnique({
         where: { id: Number(id) },
+        include: {
+            cliente: true,
+            detalles: {
+                include: {
+                    articulo: true,
+                    servicio: true
+                }
+            }
+        }
     });
-    return NextResponse.json(serializeBigIntToInt(bono));
+    return NextResponse.json(ticket, { status: 200});
 }
 
 export async function PUT(req, res) {

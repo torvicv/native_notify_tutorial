@@ -114,6 +114,8 @@ model BonosUso {
   bono     Bonos           @relation(fields: [bonoId], references: [id])
   bonoId   Int
   cantidad Int
+  ticketDetalleId Int?      @unique  
+  ticketDetalle TicketDetalle?     @relation(fields: [ticketDetalleId], references: [id])
   detalles BonosUsoDetalle[]
 }
 
@@ -145,4 +147,5 @@ model TicketDetalle {
   bono       Bonos?    @relation(fields: [bonoId], references: [id])
   bonoId     Int?
   cantidad   Int
+  uso        BonosUso? 
 }
