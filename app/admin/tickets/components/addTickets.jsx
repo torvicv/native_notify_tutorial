@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export default function AddBonos({ setValue, addDetalle }) {
+export default function AddBonos({ setValue, addDetalle, ticket }) {
     
 
   const [lineas, setLineas] = useState([]);
@@ -11,6 +11,12 @@ export default function AddBonos({ setValue, addDetalle }) {
   const [bonos, setBonos] = useState([]);
   const [esArticuloOServicioOBono, setEsArticuloOServicioOBono] = useState([]);
 
+  console.log(ticket);
+  useEffect(() => {
+    setLineas(ticket?.detalles);
+    setValueLineas();
+  }, [ticket]);
+  
   useEffect(() => {
     fetch('/api/admin/articulos')
      .then((res) => {
@@ -57,17 +63,37 @@ export default function AddBonos({ setValue, addDetalle }) {
     
   // Actualizar el valor del formulario cuando cambian las líneas
   useEffect(() => {
-    const detallesFormateados = lineas
-      .filter(linea => linea.articuloId || linea.servicioId || linea.bonoId)
-      .map(linea => ({ 
-        articuloId: linea.articuloId,
-        servicioId: linea.servicioId,
-        bonoId: linea.bonoId,
-        cantidad: linea.cantidad,
-      }));
-    
-    setValue("detalles", detallesFormateados);
+    setValueLineas();
   }, [lineas, setValue]);
+
+  const getLineas = (lineas) => {
+    return lineas?.filter(linea => linea.articuloId || linea.servicioId || linea.bonoId)
+    .map((linea, index) => ({ 
+      id: linea.id,
+      articuloId: linea.articuloId,
+      servicioId: linea.servicioId,
+      bonoId: linea.bonoId,
+      cantidad: linea.cantidad,
+      esArticuloOServicioOBono: esArticuloOServicioOBono[index] = 
+        linea.articuloId ? 'articulo' : (linea.servicioId ? 'servicio' : (linea.bonoId ? 'bono' : '')),
+
+    }));
+  }
+
+  const setValueLineas = () => {
+    const detallesFormateados = getLineas(lineas);
+    const detallesFormateadosSinTipo = detallesFormateados?.map(linea => {
+      return { 
+        id: linea.id ?? null,  // No se necesita actualizar el id cuando se agrega una nueva línea
+        articuloId: linea.articuloId ?  String(linea.articuloId) : null,
+        servicioId: linea.servicioId ?  String(linea.servicioId) : null,
+        bonoId: linea.bonoId ?  String(linea.bonoId) : null,
+        cantidad: linea.cantidad, 
+      }});
+      console.log(detallesFormateadosSinTipo);
+      
+    setValue("detalles", detallesFormateadosSinTipo);
+  }
 
   const handleArticuloChange = (index, articuloId) => {
     const nuevasLineas = [...lineas];
@@ -128,12 +154,12 @@ export default function AddBonos({ setValue, addDetalle }) {
             <option value="bono">Bono</option>
           </select>
 
-      {lineas.map((linea, index) => (
+      {lineas?.map((linea, index) => (
         (esArticuloOServicioOBono[index] == 'articulo' && (
         <div key={index} className="grid grid-cols-6 gap-3">
           <select
             className="col-span-4"
-            value={linea.articuloId}
+            defaultValue={String(linea.articuloId)}
             onChange={(e) => handleArticuloChange(index, e.target.value)}
           >
             <option value="">Seleccionar artículo</option>
@@ -147,7 +173,7 @@ export default function AddBonos({ setValue, addDetalle }) {
           <input
             type="number"
             min="1"
-            value={linea.cantidad === 0 ? '' : linea.cantidad}
+            defaultValue={linea.cantidad}
             onChange={(e) => {
               const newValue = e.target.value;
               if (newValue === "") {
@@ -172,7 +198,7 @@ export default function AddBonos({ setValue, addDetalle }) {
         <div key={index} className="grid grid-cols-6 gap-3">
           <select
             className="col-span-4"
-            value={linea.servicioId}
+            defaultValue={String(linea.servicioId)}
             onChange={(e) => handleServicioChange(index, e.target.value)}
           >
             <option value="">Seleccionar servicio</option>
@@ -186,7 +212,7 @@ export default function AddBonos({ setValue, addDetalle }) {
           <input
             type="number"
             min="1"
-            value={linea.cantidad === 0 ? '' : linea.cantidad}
+            defaultValue={linea.cantidad === 0 ? '' : linea.cantidad}
             onChange={(e) => {
               const newValue = e.target.value;
               if (newValue === "") {
@@ -211,8 +237,8 @@ export default function AddBonos({ setValue, addDetalle }) {
         <div key={index} className="grid grid-cols-6 gap-3">
           <select
             className="col-span-4"
-            value={linea.servicioId}
             onChange={(e) => handleBonoChange(index, e.target.value)}
+            defaultValue={String(linea.bonoId)}
           >
             <option value="">Seleccionar bono</option>
             {bonos.map((bono) => (
@@ -225,7 +251,7 @@ export default function AddBonos({ setValue, addDetalle }) {
           <input
             type="number"
             min="1"
-            value={linea.cantidad === 0 ? '' : linea.cantidad}
+            defaultValue={linea.cantidad}
             onChange={(e) => {
               const newValue = e.target.value;
               if (newValue === "") {
@@ -254,8 +280,7 @@ export default function AddBonos({ setValue, addDetalle }) {
       
       <h4>Resumen:</h4>
       <ul>
-        {lineas
-          .filter(linea => linea.articuloId || linea.servicioId || linea.bonoId)
+        {lineas?.filter(linea => linea.articuloId || linea.servicioId || linea.bonoId)
           .map((linea, index) => {
             console.log(linea);
             let detalle;

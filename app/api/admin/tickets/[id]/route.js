@@ -21,16 +21,16 @@ export async function GET(request, { params }) {
     return NextResponse.json(ticket, { status: 200});
 }
 
-export async function PUT(req, res) {
-    const { id } = req.query;
-    const { nombre, detalles } = await req.json();
-    if (!nombre) {
+export async function PUT(req, {params}) {
+    const { id } = await params;
+    const { clienteId, detalles } = await req.json();
+    if (!clienteId) {
         return NextResponse.status(400).json({ error: "Faltan datos requeridos" });
     }
-    await prisma.bonos.update({
+    await prisma.ticket.update({
         where: { id: Number(id) },
         data: { 
-            nombre: nombre,
+            clienteId: clienteId,
             detalles: {
                 upsert: detalles.map(detalle => ({
                     where: { 
@@ -39,12 +39,14 @@ export async function PUT(req, res) {
                     create: {
                         cantidad: detalle.cantidad,
                         articuloId: detalle.articuloId,
-                        servicioId: detalle.servicioId
+                        servicioId: detalle.servicioId,
+                        bonoId: detalle.bonoId,
                     },
                     update: {
                         cantidad: detalle.cantidad,
                         articuloId: detalle.articuloId,
-                        servicioId: detalle.servicioId
+                        servicioId: detalle.servicioId,
+                        bonoId: detalle.bonoId,
                     }
                 }))
             },

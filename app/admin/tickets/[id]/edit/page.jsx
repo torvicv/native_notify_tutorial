@@ -13,6 +13,7 @@ export default function Edit() {
   const [error, setError] = useState('');
   const [clientes, setClientes] = useState([]);
   const [ticket, setTicket] = useState(null);
+  const [clientInOptions, setClientInOptions] = useState(null);
   const resolver = z.object({
     clienteId: z.string()
         .transform((val) => (val === "" ? null : Number(val))),
@@ -31,6 +32,7 @@ export default function Edit() {
         .transform((val) => (val === "" ? null : Number(val)))
         .nullable()
         .optional(), // Permite `null` y hace que el campo sea opcional
+        id: z.coerce.number(),
       })
     ).min(1)
   });
@@ -51,11 +53,15 @@ export default function Edit() {
     },
   });
 
+  useEffect(() => {
+    console.log("Errores actuales:", errors);
+  }, [errors]);
+
   const onSubmit = async (data) => {
-    // console.log("Formulario enviado:", data);
+    console.log("Formulario enviado:", data);
     // Enviar los datos al backend
-    const response = await fetch('/api/admin/tickets', {
-      method: 'POST',
+    const response = await fetch(`/api/admin/tickets/${id}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
@@ -97,6 +103,7 @@ export default function Edit() {
         const response = res.json().then((data) => {
           console.log(data);
           setTicket(data);
+          setValue("clienteId", String(data.clienteId));
         });
         
       }).catch((error) => {
@@ -111,6 +118,7 @@ export default function Edit() {
       <form className="max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
         <div className="grid md:grid-cols-1 md:gap-6">
           <div className="relative z-0 w-full mb-5 group">
+            {clientInOptions}
           <select
             {...register('clienteId')}
             type="text"
@@ -124,7 +132,7 @@ export default function Edit() {
           </select>
           </div>
         </div>
-        <AddTickets setValue={setValue} addDetalle={detallesSeleccionados} />
+        <AddTickets setValue={setValue} ticket={ticket} addDetalle={detallesSeleccionados} />
         {errors?.detalles?.message && <p className="text-red-500">{errors.detalles.message}</p>}
 
         {errors.detalles?.length > 0 && errors?.detalles?.map((error, index) => (
