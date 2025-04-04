@@ -67,6 +67,7 @@ model Articulo {
   bonos     BonosDetalle[]
   servicios ServiciosDetalle[]
   ticketDetalles TicketDetalle[]
+  bonosUsoDetalles BonosUsoDetalle[]
 }
 
 model Servicio {
@@ -75,6 +76,7 @@ model Servicio {
   detalles  ServiciosDetalle[]
   bonos     BonosDetalle[]
   ticketDetalles TicketDetalle[]
+  bonosUsoDetalles BonosUsoDetalle[]
 }
 
 model ServiciosDetalle {
@@ -125,6 +127,10 @@ model BonosUsoDetalle {
   bonoUsoId  Int
   fecha      DateTime
   cantidad   Int
+  servicioId Int?
+  servicio   Servicio? @relation(fields: [servicioId], references: [id])
+  articuloId Int?
+  articulo   Articulo? @relation(fields: [articuloId], references: [id])
 }
 
 model Ticket {

@@ -1,13 +1,55 @@
 import { NextResponse } from "next/server";
 import bcrypt from 'bcrypt';
-import { serializeBigIntToInt } from "@/components/helpers";
 
-export async function GET(req) {
-    const { id } = req.query;
+export async function GET(req, { params }) {
+    const { id } = params;
     const cliente = await prisma.cliente.findUnique({
-        where: { id: Number(id) },
+        where: { 
+            id: Number(id),
+        },
+        include: {
+            tickets: {
+                    where: {
+                        detalles: {
+                            some: {
+                                uso: {
+                                    isNot: null,
+                                }
+                            }
+                        }
+                    },
+                include: {
+                    detalles: {
+                        where: {
+                            NOT: {
+                                uso: null,
+                            }
+                        },
+                        include: {
+                            articulo: true,
+                            servicio: true,
+                            uso: {
+                                include: {
+                                    bono: {
+                                        include: {
+                                            detalles: {
+                                                include: {
+                                                    servicio: true,
+                                                    articulo: true,
+                                                }
+                                            },
+                                        }
+                                    },
+                                    detalles: true,
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        },
     });
-    return NextResponse.json(serializeBigIntToInt(cliente));
+    return NextResponse.json(cliente);
 }
 
 export async function PUT(req, res) {
