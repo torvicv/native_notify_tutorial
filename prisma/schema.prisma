@@ -59,6 +59,7 @@ model Cliente {
   email     String  @unique
   password  String
   tickets   Ticket[]
+  bonosUso BonosUso[]
 }
 
 model Articulo {
@@ -119,6 +120,8 @@ model BonosUso {
   ticketDetalleId Int?      @unique  
   ticketDetalle TicketDetalle?     @relation(fields: [ticketDetalleId], references: [id])
   detalles BonosUsoDetalle[]
+  cliente Cliente? @relation(fields: [clienteId], references: [id])
+  clienteId Int?
 }
 
 model BonosUsoDetalle {

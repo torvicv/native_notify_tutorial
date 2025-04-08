@@ -34,7 +34,30 @@ export default function Edit() {
         .optional(), // Permite `null` y hace que el campo sea opcional
         id: z.coerce.number(),
       })
-    ).min(1)
+    ).min(0),
+    bonos_uso: z.array(
+      z.array(
+        z.object({
+          cantidad: z.coerce.number().min(1),
+          articuloId: z.string()
+          .transform((val) => (val === "" ? null : Number(val)))
+          .nullable()
+          .optional(), // Permite `null` y hace que el campo sea opcional
+          servicioId: z.string()
+          .transform((val) => (val === "" ? null : Number(val)))
+          .nullable()
+          .optional(), // Permite `null` y hace que el campo sea opcional
+          bonoId: z.string()
+          .transform((val) => (val === "" ? null : Number(val)))
+          .nullable()
+          .optional(), // Permite `null` y hace que el campo sea opcional
+          detalle_id: z.string()
+          .transform((val) => (val === "" ? null : Number(val)))
+          .nullable()
+          .optional(), // Permite `null` y hace que el campo sea opcional
+        })
+      )
+    )
   });
   const {watch, setValue, register, handleSubmit, formState: { errors }} = useForm({
     resolver: zodResolver(resolver),
@@ -67,6 +90,12 @@ export default function Edit() {
     })
     .then((res) => {
       if (res.status === 400) {
+        const error = res.json().then(err => {
+          return err.error;
+        });
+        setError(error);
+      }
+      if (res.status === 500) {
         const error = res.json().then(err => {
           return err.error;
         });
@@ -118,19 +147,48 @@ export default function Edit() {
       <form className="max-w-md mx-auto" onSubmit={handleSubmit(onSubmit)}>
         <div className="grid md:grid-cols-1 md:gap-6">
           <div className="relative z-0 w-full mb-5 group">
-            {clientInOptions}
-          <select
-            {...register('clienteId')}
-            type="text"
-            name="clienteId"
-            id="clienteId"
-          >
-            <option value="">Seleccionar cliente</option>
-            {clientes.map((cliente, index) => {
-              return <option key={'option-cliente-'+index} value={cliente.id}>{cliente.nombre}</option>;
-            })}
-          </select>
+            <select
+              {...register('clienteId')}
+              type="text"
+              name="clienteId"
+              id="clienteId"
+            >
+              <option value="">Seleccionar cliente</option>
+              {clientes.map((cliente, index) => {
+                return <option key={'option-cliente-'+index} value={cliente.id}>{cliente.nombre}</option>;
+              })}
+            </select>
           </div>
+        </div>
+        <div>
+          {
+            ticket?.cliente?.bonosUso?.map((bono, index) => {
+              return (
+                <div key={'bono-'+index} className="grid md:grid-cols-1 md:gap-6">
+                  <div className="relative z-0 w-full mb-5 group">
+                    {bono.bono.nombre} 
+                  </div>
+                  {
+                    bono.detalles.map((detalle, ind) => {
+                      return (
+                        <div key={'detalle-'+index+'-'+ind} className="relative z-0 w-full mb-5 group">
+                          <span>
+                          {detalle.articulo.nombre}
+                          </span>
+                          <span>
+                            <input type="number" defaultValue={0} {...register(`bonos_uso.${index}.${ind}.cantidad`)} />
+                          </span>
+                          <input type="hidden" {...register(`bonos_uso.${index}.${ind}.bonoId`)} defaultValue={bono.bonoId} />
+                          <input type="hidden" {...register(`bonos_uso.${index}.${ind}.articuloId`)} defaultValue={detalle.articuloId} />
+                          <input type="hidden" {...register(`bonos_uso.${index}.${ind}.detalle_id`)} defaultValue={bono.ticketDetalleId} />
+                        </div>
+                      );
+                    })
+                  }
+                </div>
+              );
+            })
+          }
         </div>
         <AddTickets setValue={setValue} ticket={ticket} addDetalle={detallesSeleccionados} />
         {errors?.detalles?.message && <p className="text-red-500">{errors.detalles.message}</p>}
@@ -149,6 +207,7 @@ export default function Edit() {
           Submit
         </button>
       </form>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
     </>
   );
 };
